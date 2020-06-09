@@ -2,9 +2,15 @@ import { Injectable } from '@nestjs/common';
 import { User } from './interfaces/user.interface';
 import { Room } from 'src/rooms/interfaces/room.interface';
 import { FirebaseService } from 'src/firebase/firebase.service';
+import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
+import { Server } from 'socket.io';
 
+@WebSocketGateway()
 @Injectable()
 export class UsersService {
+  @WebSocketServer()
+  io: Server
+
   constructor(private readonly firebaseService: FirebaseService) {}
 
   private users: User[];
@@ -29,6 +35,8 @@ export class UsersService {
       .set({
         ...user,
       });
+
+    this.io.to(user.room.name).emit("REFRESH_USERS");
   }
 
   async delete(user: User): Promise<any> {
@@ -40,5 +48,7 @@ export class UsersService {
     querySnapshot.forEach(doc => {
       doc.ref.delete();
     });
+
+    this.io.to(user.room.name).emit("REFRESH_USERS");
   }
 }

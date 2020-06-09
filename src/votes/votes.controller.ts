@@ -1,8 +1,10 @@
 import { Controller, Get, Body } from '@nestjs/common';
 import { VotesService } from './votes.service';
 import { VoteDto } from './dto/vote.dto';
+import { ApiTags } from '@nestjs/swagger';
 
-@Controller('tracks/vote')
+@ApiTags("votes")
+@Controller('votes')
 export class VotesController {
   constructor(private readonly votesService: VotesService) {}
 
@@ -10,5 +12,4 @@ export class VotesController {
   async vote(@Body() voteDto: VoteDto) {
     this.votesService.vote(voteDto);
   }
-  
 }

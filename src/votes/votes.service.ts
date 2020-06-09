@@ -2,9 +2,15 @@
 import { Injectable } from '@nestjs/common';
 import { FirebaseService } from 'src/firebase/firebase.service';
 import { Vote } from './interfaces/vote.interface';
+import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
+import { Server } from 'socket.io';
 
+@WebSocketGateway()
 @Injectable()
 export class VotesService {
+  @WebSocketServer()
+  io: Server;
+
   constructor(private readonly firebaseService: FirebaseService) {}
 
   async vote(vote: Vote): Promise<any> {
@@ -25,6 +31,7 @@ export class VotesService {
         ),
       });
     });
-  }
 
+    this.io.to(vote.track.room.name).emit('REFRESH_TRACKS');
+  }
 }

@@ -4,9 +4,15 @@ import { DateTime } from 'luxon';
 import { Track } from './interfaces/track.interface';
 import { Room } from 'src/rooms/interfaces/room.interface';
 import { FirebaseService } from 'src/firebase/firebase.service';
+import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
+import { Server } from 'socket.io';
 
+@WebSocketGateway()
 @Injectable()
 export class TracksService {
+  @WebSocketServer()
+  io: Server;
+
   constructor(private readonly firebaseService: FirebaseService) {}
 
   private tracks: Track[];
@@ -43,11 +49,13 @@ export class TracksService {
     const querySnapshot = await this.firebaseService.db
       .collection('tracks')
       .where('room', '==', room)
-      .where('played_at', '!=', null)
       .get();
 
     querySnapshot.forEach(doc => {
-      doc.ref.delete();
+      const track = doc.data();
+      if (track.played_at) {
+        doc.ref.delete();
+      }
     });
   }
 
@@ -56,6 +64,8 @@ export class TracksService {
       ...track,
       created: this.firebaseService.firebaseApp.firestore.FieldValue.serverTimestamp(),
     });
+
+    this.io.to(track.room.name).emit('REFRESH_TRACKS');
   }
 
   async delete(track: Track): Promise<any> {
@@ -67,47 +77,52 @@ export class TracksService {
     querySnapshot.forEach(doc => {
       doc.ref.delete();
     });
+
+    this.io.to(track.room.name).emit('REFRESH_TRACKS');
   }
 
   async findNext(room: Room): Promise<Track> {
     // check if a track is queued
     const tracks = await this.findByRoom(room);
-    if (tracks.length > 0) {
+    if (tracks !== undefined && tracks.length > 0) {
       this.track = tracks[0];
       await this.delete(this.track);
     }
-  
+
     // change current track
     await this.deleteCurrent(room);
     if (this.track) {
       const querySnapshot = await this.firebaseService.db
-        .collection("tracks")
-        .where("room", "==", this.track.room)
-        .where("id", "==", this.track.id)
+        .collection('tracks')
+        .where('room', '==', this.track.room)
+        .where('id', '==', this.track.id)
         .get();
-  
+
       querySnapshot.forEach(async doc => {
         await doc.ref.update({
-          played_at: this.firebaseService.firebaseApp.firestore.FieldValue.serverTimestamp()
+          played_at: this.firebaseService.firebaseApp.firestore.FieldValue.serverTimestamp(),
         });
       });
     }
-  
+
     return this.track;
   }
-  
+
   async findCurrentOrNext(room: Room): Promise<Track> {
     let track = await this.findCurrent(room);
 
-    if (track === null) {
+    if (track === undefined) {
       track = await this.findNext(room);
     } else {
-      const endTrackDate = DateTime.fromSeconds(track.played_at.seconds + (track.duration / 1000));
-      const now = DateTime.local().setZone("utc");
+      const endTrackDate = DateTime.fromSeconds(
+        track.played_at.seconds + track.duration / 1000,
+      );
+      const now = DateTime.local().setZone('utc');
       if (now >= endTrackDate) {
         track = await this.findNext(room);
       }
     }
+
     return track;
   }
 }

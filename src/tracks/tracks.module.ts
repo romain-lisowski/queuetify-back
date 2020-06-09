@@ -7,5 +7,6 @@ import { FirebaseModule } from 'src/firebase/firebase.module';
   imports: [FirebaseModule],
   controllers: [TracksController],
   providers: [TracksService],
+  exports: [TracksService]
 })
 export class TracksModule {}

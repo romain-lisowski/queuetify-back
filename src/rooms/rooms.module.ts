@@ -7,5 +7,6 @@ import { FirebaseModule } from 'src/firebase/firebase.module';
   imports: [FirebaseModule],
   controllers: [RoomsController],
   providers: [RoomsService],
+  exports: [RoomsService]
 })
 export class RoomsModule {}
