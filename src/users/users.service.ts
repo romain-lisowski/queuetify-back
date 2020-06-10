@@ -13,19 +13,18 @@ export class UsersService {
 
   constructor(private readonly firebaseService: FirebaseService) {}
 
-  private users: User[];
-
   async findByRoom(room: Room): Promise<User[]> {
+    const users: User[] = [];
     const querySnapshot = await this.firebaseService.db
       .collection('users')
       .where('room', '==', room)
       .get();
 
     querySnapshot.forEach(doc => {
-      this.users.push(doc.data());
+      users.push(doc.data());
     });
 
-    return this.users;
+    return users;
   }
 
   async create(user: User): Promise<any> {
@@ -45,6 +44,7 @@ export class UsersService {
       .where('room', '==', user.room)
       .where('spotify_id', '==', user.spotify_id)
       .get();
+
     querySnapshot.forEach(doc => {
       doc.ref.delete();
     });

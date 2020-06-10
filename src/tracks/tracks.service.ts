@@ -15,23 +15,24 @@ export class TracksService {
 
   constructor(private readonly firebaseService: FirebaseService) {}
 
-  private tracks: Track[];
-  private track: Track;
-
   async findByRoom(room: Room): Promise<Track[]> {
+    const tracks: Track[] = [];
     const querySnapshot = await this.firebaseService.db
       .collection('tracks')
       .where('room.name', '==', room.name)
       .orderBy('vote', 'desc')
       .orderBy('created_at', 'asc')
       .get();
+
     querySnapshot.forEach(doc => {
-      this.tracks.push(doc.data());
+      tracks.push(doc.data());
     });
-    return this.tracks;
+
+    return tracks;
   }
 
   async findCurrent(room: Room): Promise<Track> {
+    let track = null;
     const querySnapshot = await this.firebaseService.db
       .collection('tracks')
       .where('room.name', '==', room.name)
@@ -40,9 +41,10 @@ export class TracksService {
       .get();
 
     querySnapshot.forEach(doc => {
-      this.track = doc.data();
+      track = doc.data();
     });
-    return this.track;
+
+    return track;
   }
 
   async deleteCurrent(room: Room): Promise<any> {
@@ -53,7 +55,7 @@ export class TracksService {
 
     querySnapshot.forEach(doc => {
       const track = doc.data();
-      if (track.played_at) {
+      if (track && track.played_at) {
         doc.ref.delete();
       }
     });
@@ -82,20 +84,21 @@ export class TracksService {
   }
 
   async findNext(room: Room): Promise<Track> {
+    let track = null;
     // check if a track is queued
     const tracks = await this.findByRoom(room);
     if (tracks !== undefined && tracks.length > 0) {
-      this.track = tracks[0];
-      await this.delete(this.track);
+      track = tracks[0];
+      await this.delete(track);
     }
 
     // change current track
     await this.deleteCurrent(room);
-    if (this.track) {
+    if (track) {
       const querySnapshot = await this.firebaseService.db
         .collection('tracks')
-        .where('room.name', '==', this.track.room.name)
-        .where('id', '==', this.track.id)
+        .where('room.name', '==', track.room.name)
+        .where('id', '==', track.id)
         .get();
 
       querySnapshot.forEach(async doc => {
@@ -105,13 +108,13 @@ export class TracksService {
       });
     }
 
-    return this.track;
+    return track;
   }
 
   async findCurrentOrNext(room: Room): Promise<Track> {
     let track = await this.findCurrent(room);
 
-    if (track === undefined) {
+    if (track === undefined || track === null) {
       track = await this.findNext(room);
     } else {
       const endTrackDate = DateTime.fromSeconds(

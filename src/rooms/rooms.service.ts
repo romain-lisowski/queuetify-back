@@ -6,18 +6,18 @@ import { FirebaseService } from 'src/firebase/firebase.service';
 export class RoomsService {
   constructor(private readonly firebaseService: FirebaseService) {}
 
-  private rooms: Room[] = [];
-
   async findAll(): Promise<Room[]> {
+    const rooms: Room[] = [];
     const querySnapshot = await this.firebaseService.db
       .collection('rooms')
       .orderBy('name', 'asc')
       .orderBy('created_at', 'asc')
       .get();
+
     querySnapshot.forEach(doc => {
-      this.rooms.push(doc.data());
+      rooms.push(doc.data());
     });
 
-    return this.rooms;
+    return rooms;
   }
 }
