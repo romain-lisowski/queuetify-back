@@ -5,6 +5,7 @@ import { RoomsService } from 'src/rooms/rooms.service';
 import { Room } from 'src/rooms/interfaces/room.interface';
 import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server } from 'socket.io';
+import { Cron } from '@nestjs/schedule';
 
 @WebSocketGateway()
 @Injectable()
@@ -12,34 +13,45 @@ export class PlayerService {
   @WebSocketServer()
   io: Server;
 
+  private rooms: Room[];
+
   constructor(
     private readonly roomsService: RoomsService,
     private readonly tracksService: TracksService,
-  ) {}
+  ) {
+    this.findRooms();
+  }
 
+  async findRooms() {
+    this.rooms = await this.roomsService.findAll();
+  }
+
+  @Cron('*/2 * * * * *')
   async run() {
-    const rooms: Room[] = await this.roomsService.findAll();
-
-    for (const room of rooms) {
+    for (const room of this.rooms) {
       if (room.current === undefined || room.current === null) {
+        // get next track if exists
         room.current = await this.tracksService.findCurrentOrNext(room);
+
+        // new track played
         if (room.current) {
           this.io.to(room.name).emit('REFRESH_CURRENT_TRACK');
           this.io.to(room.name).emit('REFRESH_TRACKS');
         }
       } else {
-        // next track if current_track end
+        const now = DateTime.local().setZone('utc');
         const endTrackDate = DateTime.fromSeconds(
           room.current.played_at.seconds + room.current.duration / 1000,
         );
-        const now = DateTime.local().setZone('utc');
+        
+        // clear current for next track if current ends
         if (now >= endTrackDate) {
           room.current = null;
           this.io.to(room.name).emit('REFRESH_CURRENT_TRACK');
           this.io.to(room.name).emit('REFRESH_TRACKS');
         }
       }
-      setTimeout(this.run, 2000);
+      
     }
   }
 }

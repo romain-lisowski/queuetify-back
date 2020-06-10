@@ -5,9 +5,7 @@ import {
 } from '@nestjs/platform-fastify';
 import * as helmet from 'helmet';
 import 'dotenv/config';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
-import { PlayerService } from './player/player.service';
 
 declare const module: any;
 
@@ -20,35 +18,6 @@ async function bootstrap() {
 
   // security
   app.use(helmet());
-
-  // global headers
-  app.use(function(req, res, next) {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header(
-      'Access-Control-Allow-Headers',
-      'Origin, X-Requested-With, Content-Type, Accept',
-    );
-    res.header('Access-Control-Allow-Methods', 'GET, POST, DELETE');
-    next();
-  });
-
-  // swagger documentation
-  const options = new DocumentBuilder()
-    .setTitle('Q')
-    .setDescription('API articles et auteurs')
-    .setVersion('1.0')
-    .addTag('Q')
-    .build();
-  const document = SwaggerModule.createDocument(app, options);
-  SwaggerModule.setup('swagger', app, document);
-
-  // run service for each existing room
-  const playerService = app.get(PlayerService);
-  try {
-    playerService.run();
-  } catch (e) {
-    console.log(e);
-  }
 
   // hot reload for dev
   if (module.hot) {

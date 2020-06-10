@@ -21,7 +21,7 @@ export class TracksService {
   async findByRoom(room: Room): Promise<Track[]> {
     const querySnapshot = await this.firebaseService.db
       .collection('tracks')
-      .where('room', '==', room)
+      .where('room.name', '==', room.name)
       .orderBy('vote', 'desc')
       .orderBy('created_at', 'asc')
       .get();
@@ -34,7 +34,7 @@ export class TracksService {
   async findCurrent(room: Room): Promise<Track> {
     const querySnapshot = await this.firebaseService.db
       .collection('tracks')
-      .where('room', '==', room)
+      .where('room.name', '==', room.name)
       .where('current', '==', true)
       .limit(1)
       .get();
@@ -48,7 +48,7 @@ export class TracksService {
   async deleteCurrent(room: Room): Promise<any> {
     const querySnapshot = await this.firebaseService.db
       .collection('tracks')
-      .where('room', '==', room)
+      .where('room.name', '==', room.name)
       .get();
 
     querySnapshot.forEach(doc => {
@@ -94,7 +94,7 @@ export class TracksService {
     if (this.track) {
       const querySnapshot = await this.firebaseService.db
         .collection('tracks')
-        .where('room', '==', this.track.room)
+        .where('room.name', '==', this.track.room.name)
         .where('id', '==', this.track.id)
         .get();
 

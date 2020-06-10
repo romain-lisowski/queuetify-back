@@ -4,9 +4,7 @@ import { Track } from './interfaces/track.interface';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { DeleteTrackDto } from './dto/delete-track.dto';
 import { Room } from 'src/rooms/interfaces/room.interface';
-import { ApiTags } from '@nestjs/swagger';
 
-@ApiTags('tracks')
 @Controller('tracks')
 export class TracksController {
   constructor(private readonly tracksService: TracksService) {}

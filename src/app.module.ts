@@ -7,6 +7,7 @@ import { TracksModule } from './tracks/tracks.module';
 import { PlayerModule } from './player/player.module';
 import { FirebaseModule } from './firebase/firebase.module';
 import { VotesModule } from './votes/votes.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { VotesModule } from './votes/votes.module';
     PlayerModule,
     FirebaseModule,
     VotesModule,
+    ScheduleModule.forRoot()
   ],
   controllers: [AppController],
   providers: [AppService],
