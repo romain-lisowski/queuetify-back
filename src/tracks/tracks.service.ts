@@ -19,7 +19,7 @@ export class TracksService {
     const tracks: Track[] = [];
     const querySnapshot = await this.firebaseService.db
       .collection('tracks')
-      .where('room.name', '==', room.name)
+      .where('room_id', '==', room.id)
       .orderBy('vote', 'desc')
       .orderBy('created_at', 'asc')
       .get();
@@ -35,7 +35,7 @@ export class TracksService {
     let track = null;
     const querySnapshot = await this.firebaseService.db
       .collection('tracks')
-      .where('room.name', '==', room.name)
+      .where('room_id', '==', room.id)
       .where('current', '==', true)
       .limit(1)
       .get();
@@ -50,7 +50,7 @@ export class TracksService {
   async deleteCurrent(room: Room): Promise<any> {
     const querySnapshot = await this.firebaseService.db
       .collection('tracks')
-      .where('room.name', '==', room.name)
+      .where('room_id', '==', room.id)
       .get();
 
     querySnapshot.forEach(doc => {
@@ -67,20 +67,20 @@ export class TracksService {
       created: this.firebaseService.firebaseApp.firestore.FieldValue.serverTimestamp(),
     });
 
-    this.io.to(track.room.name).emit('REFRESH_TRACKS');
+    this.io.to(track.room_id).emit('REFRESH_TRACKS');
   }
 
   async delete(track: Track): Promise<any> {
     const querySnapshot = await this.firebaseService.db
       .collection('tracks')
-      .where('room', '==', track.room)
+      .where('room_id', '==', track.room_id)
       .where('id', '==', track.id)
       .get();
     querySnapshot.forEach(doc => {
       doc.ref.delete();
     });
 
-    this.io.to(track.room.name).emit('REFRESH_TRACKS');
+    this.io.to(track.room_id).emit('REFRESH_TRACKS');
   }
 
   async findNext(room: Room): Promise<Track> {
@@ -97,7 +97,7 @@ export class TracksService {
     if (track) {
       const querySnapshot = await this.firebaseService.db
         .collection('tracks')
-        .where('room.name', '==', track.room.name)
+        .where('room_id', '==', track.room_id)
         .where('id', '==', track.id)
         .get();
 

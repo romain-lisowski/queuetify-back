@@ -1,8 +1,7 @@
 import { User } from 'src/users/interfaces/user.interface';
-import { Room } from 'src/rooms/interfaces/room.interface';
 
 export interface Track {
-  readonly room: Room;
+  readonly room_id: string;
   readonly id: string;
   readonly name?: string;
   readonly artist?: string;

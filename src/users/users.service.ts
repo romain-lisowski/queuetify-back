@@ -17,7 +17,7 @@ export class UsersService {
     const users: User[] = [];
     const querySnapshot = await this.firebaseService.db
       .collection('users')
-      .where('room', '==', room)
+      .where('room_id', '==', room.id)
       .get();
 
     querySnapshot.forEach(doc => {
@@ -35,13 +35,13 @@ export class UsersService {
         ...user,
       });
 
-    this.io.to(user.room.name).emit("REFRESH_USERS");
+    this.io.to(user.room_id).emit("REFRESH_USERS");
   }
 
   async delete(user: User): Promise<any> {
     const querySnapshot = await this.firebaseService.db
       .collection('users')
-      .where('room', '==', user.room)
+      .where('room_id', '==', user.room_id)
       .where('spotify_id', '==', user.spotify_id)
       .get();
 
@@ -49,6 +49,6 @@ export class UsersService {
       doc.ref.delete();
     });
 
-    this.io.to(user.room.name).emit("REFRESH_USERS");
+    this.io.to(user.room_id).emit("REFRESH_USERS");
   }
 }

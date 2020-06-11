@@ -35,8 +35,8 @@ export class PlayerService {
 
         // new track played
         if (room.current) {
-          this.io.to(room.name).emit('REFRESH_CURRENT_TRACK');
-          this.io.to(room.name).emit('REFRESH_TRACKS');
+          this.io.to(room.id).emit('REFRESH_CURRENT_TRACK');
+          this.io.to(room.id).emit('REFRESH_TRACKS');
         }
       } else {
         const now = DateTime.local().setZone('utc');
@@ -47,8 +47,8 @@ export class PlayerService {
         // clear current for next track if current ends
         if (now >= endTrackDate) {
           room.current = null;
-          this.io.to(room.name).emit('REFRESH_CURRENT_TRACK');
-          this.io.to(room.name).emit('REFRESH_TRACKS');
+          this.io.to(room.id).emit('REFRESH_CURRENT_TRACK');
+          this.io.to(room.id).emit('REFRESH_TRACKS');
         }
       }
       

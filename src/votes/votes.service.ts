@@ -16,7 +16,7 @@ export class VotesService {
   async vote(vote: Vote): Promise<any> {
     const querySnapshot = await this.firebaseService.db
       .collection('tracks')
-      .where('room', '==', vote.track.room)
+      .where('room_id', '==', vote.track.room_id)
       .where('id', '==', vote.track.id)
       .get();
 
@@ -32,6 +32,6 @@ export class VotesService {
       });
     });
 
-    this.io.to(vote.track.room.name).emit('REFRESH_TRACKS');
+    this.io.to(vote.track.room_id).emit('REFRESH_TRACKS');
   }
 }

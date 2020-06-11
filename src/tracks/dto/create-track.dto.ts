@@ -1,10 +1,9 @@
 import { IsString } from 'class-validator';
 import { User } from 'src/users/interfaces/user.interface';
-import { Room } from 'src/rooms/interfaces/room.interface';
 
 export class CreateTrackDto {
   @IsString()
-  readonly room: Room;
+  readonly room_id: string;
 
   @IsString()
   readonly id: string;
