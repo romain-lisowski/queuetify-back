@@ -3,7 +3,6 @@ import { TracksService } from './tracks.service';
 import { Track } from './interfaces/track.interface';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { DeleteTrackDto } from './dto/delete-track.dto';
-import { Room } from 'src/rooms/interfaces/room.interface';
 import { ApiHeaders } from 'src/decorators/api';
 
 @Controller('tracks')
@@ -11,15 +10,15 @@ export class TracksController {
   constructor(private readonly tracksService: TracksService) {}
 
   @ApiHeaders()
-  @Get(':room')
-  async findByRoom(@Param('room') room: Room): Promise<Track[]> {
-    return this.tracksService.findByRoom(room);
+  @Get(':room_id')
+  async findByRoomId(@Param('room_id') roomId: string): Promise<Track[]> {
+    return this.tracksService.findByRoomId(roomId);
   }
 
   @ApiHeaders()
-  @Get('current/:room')
-  async findCurrent(@Param('room') room: Room): Promise<Track> {
-    return this.tracksService.findCurrent(room);
+  @Get('current/:room_id')
+  async findCurrentByRoomId(@Param('room_id') roomId: string): Promise<Track> {
+    return this.tracksService.findCurrentByRoomId(roomId);
   }
 
   @ApiHeaders()

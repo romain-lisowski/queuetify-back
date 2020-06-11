@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { User } from './interfaces/user.interface';
-import { Room } from 'src/rooms/interfaces/room.interface';
 import { FirebaseService } from 'src/firebase/firebase.service';
 import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server } from 'socket.io';
@@ -13,11 +12,11 @@ export class UsersService {
 
   constructor(private readonly firebaseService: FirebaseService) {}
 
-  async findByRoom(room: Room): Promise<User[]> {
+  async findByRoomId(roomId: string): Promise<User[]> {
     const users: User[] = [];
     const querySnapshot = await this.firebaseService.db
       .collection('users')
-      .where('room_id', '==', room.id)
+      .where('room_id', '==', roomId)
       .get();
 
     querySnapshot.forEach(doc => {

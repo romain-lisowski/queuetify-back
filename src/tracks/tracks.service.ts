@@ -15,11 +15,11 @@ export class TracksService {
 
   constructor(private readonly firebaseService: FirebaseService) {}
 
-  async findByRoom(room: Room): Promise<Track[]> {
+  async findByRoomId(roomId: string): Promise<Track[]> {
     const tracks: Track[] = [];
     const querySnapshot = await this.firebaseService.db
       .collection('tracks')
-      .where('room_id', '==', room.id)
+      .where('room_id', '==', roomId)
       .orderBy('vote', 'desc')
       .orderBy('created_at', 'asc')
       .get();
@@ -31,11 +31,11 @@ export class TracksService {
     return tracks;
   }
 
-  async findCurrent(room: Room): Promise<Track> {
+  async findCurrentByRoomId(roomId: string): Promise<Track> {
     let track = null;
     const querySnapshot = await this.firebaseService.db
       .collection('tracks')
-      .where('room_id', '==', room.id)
+      .where('room_id', '==', roomId)
       .where('current', '==', true)
       .limit(1)
       .get();
@@ -86,7 +86,7 @@ export class TracksService {
   async findNext(room: Room): Promise<Track> {
     let track = null;
     // check if a track is queued
-    const tracks = await this.findByRoom(room);
+    const tracks = await this.findByRoomId(room.id);
     if (tracks !== undefined && tracks.length > 0) {
       track = tracks[0];
       await this.delete(track);
@@ -112,7 +112,7 @@ export class TracksService {
   }
 
   async findCurrentOrNext(room: Room): Promise<Track> {
-    let track = await this.findCurrent(room);
+    let track = await this.findCurrentByRoomId(room.id);
 
     if (track === undefined || track === null) {
       track = await this.findNext(room);
