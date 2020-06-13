@@ -86,17 +86,21 @@ export class TracksService {
     this.io.to(deleteTrackDto.room_id).emit('REFRESH_TRACKS');
   }
 
+  /**
+   * Change current track
+   * @param room 
+   */
   async findNext(room: Room): Promise<Track> {
     let track = null;
+
+    await this.deleteCurrent(room);
+    
     // check if a track is queued
     const tracks = await this.findByRoomId(room.id);
     if (tracks !== undefined && tracks.length > 0) {
       track = tracks[0];
-      await this.delete(track);
     }
 
-    // change current track
-    await this.deleteCurrent(room);
     if (track) {
       const querySnapshot = await this.firebaseService.db
         .collection('tracks')
