@@ -4,8 +4,11 @@ import {
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
 import * as helmet from 'helmet';
+import * as fastifyRateLimit from 'fastify-rate-limit';
+import * as bodyParser from 'body-parser';
 import 'dotenv/config';
 import { AppModule } from './app.module';
+
 
 declare const module: any;
 
@@ -18,6 +21,14 @@ async function bootstrap() {
 
   // security
   app.use(helmet());
+  app.enableCors();
+  app.register(fastifyRateLimit, {
+    max: 50,
+    timeWindow: '1 minute'
+  });
+  app.use(bodyParser.json());
+  app.use(bodyParser.urlencoded({ extended: false }));
+
 
   // hot reload for dev
   if (module.hot) {
