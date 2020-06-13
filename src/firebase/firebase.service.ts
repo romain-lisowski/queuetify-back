@@ -4,6 +4,7 @@ import '@firebase/firestore';
 
 @Injectable()
 export class FirebaseService {
+  public firebase;
   public firebaseApp;
   public readonly db;
 
@@ -18,6 +19,8 @@ export class FirebaseService {
       appId: process.env.FIREBASE_APPID,
       measurementId: process.env.FIREBASE_MEASUREMENTID,
     });
+
+    this.firebase = firebase;
 
     this.db = this.firebaseApp.firestore();
   }

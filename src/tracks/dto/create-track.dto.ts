@@ -1,4 +1,4 @@
-import { IsString } from 'class-validator';
+import { IsString, IsNumber } from 'class-validator';
 import { User } from 'src/users/interfaces/user.interface';
 
 export class CreateTrackDto {
@@ -14,7 +14,7 @@ export class CreateTrackDto {
   @IsString()
   readonly artist: string;
 
-  @IsString()
+  @IsNumber()
   readonly duration: number;
 
   @IsString()
@@ -26,9 +26,5 @@ export class CreateTrackDto {
   @IsString()
   readonly image_small: string;
 
-  @IsString()
   readonly user: User;
-
-  @IsString()
-  readonly played_at: any;
 }

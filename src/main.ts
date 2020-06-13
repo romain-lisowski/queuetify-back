@@ -26,7 +26,6 @@ async function bootstrap() {
     max: 50,
     timeWindow: '1 minute'
   });
-  app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: false }));
 
 

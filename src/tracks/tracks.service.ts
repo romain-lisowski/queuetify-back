@@ -61,26 +61,29 @@ export class TracksService {
     });
   }
 
-  async create(track: Track): Promise<any> {
+  async create(createTrackDto: Track): Promise<any> {
     await this.firebaseService.db.collection('tracks').add({
-      ...track,
-      created: this.firebaseService.firebaseApp.firestore.FieldValue.serverTimestamp(),
+      ...createTrackDto,
+      vote: 0,
+      voters: [],
+      created_at: this.firebaseService.firebase.firestore.FieldValue.serverTimestamp(),
+      played_at: null
     });
 
-    this.io.to(track.room_id).emit('REFRESH_TRACKS');
+    this.io.to(createTrackDto.room_id).emit('REFRESH_TRACKS');
   }
 
-  async delete(track: Track): Promise<any> {
+  async delete(deleteTrackDto: Track): Promise<any> {
     const querySnapshot = await this.firebaseService.db
       .collection('tracks')
-      .where('room_id', '==', track.room_id)
-      .where('id', '==', track.id)
+      .where('room_id', '==', deleteTrackDto.room_id)
+      .where('id', '==', deleteTrackDto.id)
       .get();
     querySnapshot.forEach(doc => {
       doc.ref.delete();
     });
 
-    this.io.to(track.room_id).emit('REFRESH_TRACKS');
+    this.io.to(deleteTrackDto.room_id).emit('REFRESH_TRACKS');
   }
 
   async findNext(room: Room): Promise<Track> {
@@ -103,7 +106,7 @@ export class TracksService {
 
       querySnapshot.forEach(async doc => {
         await doc.ref.update({
-          played_at: this.firebaseService.firebaseApp.firestore.FieldValue.serverTimestamp(),
+          played_at: this.firebaseService.firebase.firestore.FieldValue.serverTimestamp(),
         });
       });
     }
