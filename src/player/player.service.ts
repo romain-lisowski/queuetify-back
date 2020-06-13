@@ -40,15 +40,17 @@ export class PlayerService {
         }
       } else {
         const now = DateTime.local().setZone('utc');
-        const endTrackDate = DateTime.fromSeconds(
-          room.current.played_at.seconds + room.current.duration / 1000,
-        );
-        
-        // clear current for next track if current ends
-        if (now >= endTrackDate) {
-          room.current = null;
-          this.io.to(room.id).emit('REFRESH_CURRENT_TRACK');
-          this.io.to(room.id).emit('REFRESH_TRACKS');
+        if (room.current.played_at) {
+          const endTrackDate = DateTime.fromSeconds(
+            room.current.played_at.seconds + room.current.duration / 1000,
+          );
+          
+          // clear current for next track if current ends
+          if (now >= endTrackDate) {
+            room.current = null;
+            this.io.to(room.id).emit('REFRESH_CURRENT_TRACK');
+            this.io.to(room.id).emit('REFRESH_TRACKS');
+          }
         }
       }
       
