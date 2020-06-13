@@ -28,6 +28,7 @@
     "@nestjs/schedule": "^0.4.0",
     "@nestjs/websockets": "^7.1.3",
     "body-parser": "^1.19.0",
+    "class-transformer": "^0.2.3",
     "class-validator": "^0.12.2",
     "dotenv": "^8.2.0",
     "fastify-rate-limit": "^3.0.1",
