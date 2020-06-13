@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, ValidationPipe } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { User } from './interfaces/user.interface';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -17,13 +17,13 @@ export class UsersController {
 
   @ApiHeaders()
   @Post()
-  async create(@Body() createUserDto: CreateUserDto) {
+  async create(@Body(new ValidationPipe({transform: true})) createUserDto: CreateUserDto) {
     this.usersService.create(createUserDto);
   }
 
   @ApiHeaders()
   @Delete()
-  async delete(@Body() deleteUserDto: DeleteUserDto) {
+  async delete(@Body(new ValidationPipe({transform: true})) deleteUserDto: DeleteUserDto) {
     this.usersService.delete(deleteUserDto);
   }
 }

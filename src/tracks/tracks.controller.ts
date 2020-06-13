@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, ValidationPipe } from '@nestjs/common';
 import { TracksService } from './tracks.service';
 import { Track } from './interfaces/track.interface';
 import { CreateTrackDto } from './dto/create-track.dto';
@@ -23,13 +23,13 @@ export class TracksController {
 
   @ApiHeaders()
   @Post()
-  async create(@Body() createTrackDto: CreateTrackDto) {
+  async create(@Body(new ValidationPipe({transform: true})) createTrackDto: CreateTrackDto) {
     this.tracksService.create(createTrackDto);
   }
 
   @ApiHeaders()
   @Delete()
-  async delete(@Body() deleteTrackDto: DeleteTrackDto) {
+  async delete(@Body(new ValidationPipe({transform: true})) deleteTrackDto: DeleteTrackDto) {
     this.tracksService.delete(deleteTrackDto);
   }
 }
