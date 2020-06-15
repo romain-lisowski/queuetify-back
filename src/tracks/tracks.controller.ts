@@ -12,7 +12,7 @@ export class TracksController {
   @ApiHeaders()
   @Get(':room_id')
   async findByRoomId(@Param('room_id') roomId: string): Promise<Track[]> {
-    return this.tracksService.findByRoomId(roomId);
+    return this.tracksService.findQueueTracks(roomId);
   }
 
   @ApiHeaders()
