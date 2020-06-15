@@ -20,8 +20,7 @@ export class FirebaseService {
       measurementId: process.env.FIREBASE_MEASUREMENTID,
     });
 
-    this.firebase = firebase;
-
     this.db = this.firebaseApp.firestore();
+    this.firebase = firebase;
   }
 }
