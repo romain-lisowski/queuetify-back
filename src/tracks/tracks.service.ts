@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/camelcase */
 import { Injectable } from '@nestjs/common';
 import { DateTime } from 'luxon';
 import { Track } from './interfaces/track.interface';

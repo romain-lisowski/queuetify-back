@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/camelcase */
 import { Injectable } from '@nestjs/common';
 import { FirebaseService } from 'src/firebase/firebase.service';
 import { Vote } from './interfaces/vote.interface';
