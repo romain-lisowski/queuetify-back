@@ -1,8 +1,9 @@
 import { Track } from "src/tracks/interfaces/track.interface";
 
 export interface Room {
-  readonly id: string;
-  readonly name: string;
+  readonly name?: string;
+  readonly id?: string;
   readonly created_at?: string;
   current?: Track;
+  password?: string;
 }
