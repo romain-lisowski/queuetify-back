@@ -1,4 +1,4 @@
-import { Controller, Get, Body, ValidationPipe } from '@nestjs/common';
+import { Controller, Post, Body, ValidationPipe } from '@nestjs/common';
 import { VotesService } from './votes.service';
 import { VoteDto } from './dto/vote.dto';
 import { ApiHeaders } from 'src/decorators/api';
@@ -8,7 +8,7 @@ export class VotesController {
   constructor(private readonly votesService: VotesService) {}
 
   @ApiHeaders()
-  @Get()
+  @Post()
   async vote(@Body(new ValidationPipe({transform: true})) voteDto: VoteDto) {
     this.votesService.vote(voteDto);
   }

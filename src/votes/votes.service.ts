@@ -23,7 +23,7 @@ export class VotesService {
     querySnapshot.forEach(async doc => {
       await doc.ref.update({
         vote: vote.track.vote + vote.increment,
-        voters: this.firebaseService.firebaseApp.firestore.FieldValue.arrayUnion(
+        voters: this.firebaseService.firebase.firestore.FieldValue.arrayUnion(
           {
             ...vote.user,
             increment: vote.increment,
