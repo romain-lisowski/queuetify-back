@@ -5,5 +5,4 @@ export interface Room {
   readonly id?: string;
   readonly created_at?: string;
   current?: Track;
-  password?: string;
 }
