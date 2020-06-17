@@ -5,6 +5,7 @@ import { Room } from 'src/rooms/interfaces/room.interface';
 import { FirebaseService } from 'src/firebase/firebase.service';
 import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server } from 'socket.io';
+import { DeleteTrackDto } from './dto/delete-track.dto';
 
 @WebSocketGateway()
 @Injectable()
@@ -27,7 +28,10 @@ export class TracksService {
       const track = doc.data();
       
       if (track && !track.played_at) {
-        tracks.push(track);
+        tracks.push({
+          id: doc.id,
+          ...track
+        });
       }
     });
 
@@ -45,7 +49,10 @@ export class TracksService {
     querySnapshot.forEach(doc => {
       const track = doc.data();
       if (track && track.played_at) {
-        current = track;
+        current = {
+          id: track.id,
+          ...track
+        };
       }
     });
 
@@ -78,15 +85,13 @@ export class TracksService {
     this.io.to(createTrackDto.room_id).emit('REFRESH_TRACKS');
   }
 
-  async delete(deleteTrackDto: Track): Promise<any> {
-    const querySnapshot = await this.firebaseService.db
+  async delete(deleteTrackDto: DeleteTrackDto): Promise<any> {
+    const doc = await this.firebaseService.db
       .collection('tracks')
-      .where('room_id', '==', deleteTrackDto.room_id)
-      .where('id', '==', deleteTrackDto.id)
+      .doc(deleteTrackDto.id)
       .get();
-    querySnapshot.forEach(doc => {
-      doc.ref.delete();
-    });
+    
+    doc.ref.delete();
 
     this.io.to(deleteTrackDto.room_id).emit('REFRESH_TRACKS');
   }
@@ -107,16 +112,13 @@ export class TracksService {
     }
 
     if (track) {
-      const querySnapshot = await this.firebaseService.db
+      const doc = await this.firebaseService.db
         .collection('tracks')
-        .where('room_id', '==', track.room_id)
-        .where('id', '==', track.id)
+        .doc(track.id)
         .get();
 
-      querySnapshot.forEach(async doc => {
-        await doc.ref.update({
-          played_at: this.firebaseService.firebase.firestore.FieldValue.serverTimestamp(),
-        });
+      doc.ref.update({
+        played_at: this.firebaseService.firebase.firestore.FieldValue.serverTimestamp(),
       });
     }
 

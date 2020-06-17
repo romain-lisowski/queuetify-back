@@ -2,7 +2,8 @@ import { User } from 'src/users/interfaces/user.interface';
 
 export interface Track {
   readonly room_id: string;
-  readonly id: string;
+  readonly spotify_id: string;
+  readonly id?: string;
   readonly name?: string;
   readonly artist?: string;
   readonly duration?: number;

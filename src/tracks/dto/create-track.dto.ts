@@ -6,7 +6,7 @@ export class CreateTrackDto {
   readonly room_id: string;
 
   @IsString()
-  readonly id: string;
+  readonly spotify_id: string;
 
   @IsString()
   readonly name: string;

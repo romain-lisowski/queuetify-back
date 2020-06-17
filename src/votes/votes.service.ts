@@ -13,22 +13,19 @@ export class VotesService {
   constructor(private readonly firebaseService: FirebaseService) {}
 
   async vote(vote: Vote): Promise<any> {
-    const querySnapshot = await this.firebaseService.db
+    const doc = await this.firebaseService.db
       .collection('tracks')
-      .where('room_id', '==', vote.track.room_id)
-      .where('id', '==', vote.track.id)
+      .doc(vote.track.id)
       .get();
 
-    querySnapshot.forEach(async doc => {
-      await doc.ref.update({
-        vote: vote.track.vote + vote.increment,
-        voters: this.firebaseService.firebase.firestore.FieldValue.arrayUnion(
-          {
-            ...vote.user,
-            increment: vote.increment,
-          },
-        ),
-      });
+    await doc.ref.update({
+      vote: vote.track.vote + vote.increment,
+      voters: this.firebaseService.firebase.firestore.FieldValue.arrayUnion(
+        {
+          ...vote.user,
+          increment: vote.increment,
+        },
+      ),
     });
 
     this.io.to(vote.track.room_id).emit('REFRESH_TRACKS');
