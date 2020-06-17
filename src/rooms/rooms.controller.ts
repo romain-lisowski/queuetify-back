@@ -1,9 +1,7 @@
-import { Controller, Get, Param, Post, Body, ValidationPipe, Delete } from '@nestjs/common';
+import { Controller, Get, Param, Post, Delete } from '@nestjs/common';
 import { RoomsService } from './rooms.service';
 import { Room } from './interfaces/room.interface';
 import { ApiHeaders } from 'src/decorators/api';
-import { CreateRoomDto } from './dto/create-room.dto';
-import { DeleteRoomDto } from './dto/delete-room.dto';
 
 @Controller('rooms')
 export class RoomsController {
@@ -23,13 +21,13 @@ export class RoomsController {
 
   @ApiHeaders()
   @Post()
-  async create(@Body(new ValidationPipe({transform: true})) createRoomDto: CreateRoomDto) {
-    this.roomsService.create(createRoomDto);
+  async create(): Promise<Room> {
+    return this.roomsService.create();
   }
 
   @ApiHeaders()
-  @Delete()
-  async delete(@Body(new ValidationPipe({transform: true})) deleteRoomDto: DeleteRoomDto) {
-    this.roomsService.delete(deleteRoomDto);
+  @Delete(':id')
+  async delete(@Param('id') id: string) {
+    this.roomsService.delete(id);
   }
 }

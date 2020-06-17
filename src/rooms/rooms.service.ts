@@ -21,46 +21,44 @@ export class RoomsService {
       .get();
     
     querySnapshot.forEach(doc => {
-      rooms.push(doc.data());
+      rooms.push({
+        id: doc.id,
+        ...doc.data()
+      });
     });
     
     return rooms;
   }
   
   async findOneById(id: string): Promise<Room> {
-    let room = null;
-    const querySnapshot = await this.firebaseService.db
+    const doc = await this.firebaseService.db
       .collection('rooms')
-      .where('id', '==', id)
-      .limit(1)
+      .doc(id)
       .get();
     
-    querySnapshot.forEach(doc => {
-      room = doc.data();
+    return {
+      id: doc.id,
+      ...doc.data()
+    };
+  }
+
+  async create(): Promise<Room> {
+    const room = await this.firebaseService.db.collection('rooms').add({
+      name: null,
+      created_at: this.firebaseService.firebase.firestore.FieldValue.serverTimestamp(),
+      current: null,
     });
-    
+
     return room;
   }
 
-  async create(createRoomDto: Room): Promise<any> {
-    await this.firebaseService.db.collection('rooms').add({
-      ...createRoomDto,
-      created_at: this.firebaseService.firebase.firestore.FieldValue.serverTimestamp(),
-      current: null
-    });
-
-    this.io.to(createRoomDto.id).emit('ROOM_CREATED');
-  }
-
-  async delete(deleteRoomDto: Room): Promise<any> {
-    const querySnapshot = await this.firebaseService.db
+  async delete(id: string): Promise<any> {
+    const doc = await this.firebaseService.db
       .collection('rooms')
-      .where('id', '==', deleteRoomDto.id)
+      .doc(id)
       .get();
 
-    querySnapshot.forEach(doc => {
-      doc.ref.delete();
-    });
+    doc.ref.delete();
   }
 }
 
