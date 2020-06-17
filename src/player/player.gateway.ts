@@ -35,7 +35,7 @@ export class PlayerGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage('MESSAGE')
   async onMessage(client, data) {
-    const message = '<b>[' + data.userName + ']</b>' + ent.encode(data.message);
+    const message = '<strong>[' + data.userName + ']</strong>' + ent.encode(data.message);
     console.log('IO: Message : (' + data.roomId + ') [' + data.userName +'] ' + message);
     this.server
       .to(data.roomId)
