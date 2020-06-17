@@ -8,7 +8,7 @@ import * as fastifyRateLimit from 'fastify-rate-limit';
 import * as bodyParser from 'body-parser';
 import 'dotenv/config';
 import { AppModule } from './app.module';
-
+const PORT = process.env.PORT || '3000';
 
 declare const module: any;
 
@@ -36,7 +36,7 @@ async function bootstrap() {
   }
 
   // run server
-  await app.listen(3000, '0.0.0.0');
+  await app.listen(parseInt(PORT), '0.0.0.0');
   console.log(`Running server on: ${await app.getUrl()}`);
 }
 
