@@ -5,5 +5,6 @@ export class DeleteUserDto {
   readonly room_id: string;
 
   @IsString()
-  readonly spotify_id: string;
+  readonly id: string;
+  
 }

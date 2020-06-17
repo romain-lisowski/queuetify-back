@@ -3,6 +3,7 @@ import { User } from './interfaces/user.interface';
 import { FirebaseService } from 'src/firebase/firebase.service';
 import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server } from 'socket.io';
+import { DeleteUserDto } from './dto/delete-user.dto';
 
 @WebSocketGateway()
 @Injectable()
@@ -37,17 +38,13 @@ export class UsersService {
     this.io.to(user.room_id).emit("REFRESH_USERS");
   }
 
-  async delete(user: User): Promise<any> {
-    const querySnapshot = await this.firebaseService.db
+  async delete(deleteUserDto: DeleteUserDto): Promise<any> {
+    const doc = await this.firebaseService.db
       .collection('users')
-      .where('room_id', '==', user.room_id)
-      .where('spotify_id', '==', user.spotify_id)
+      .doc(deleteUserDto.id)
       .get();
+    doc.ref.delete();
 
-    querySnapshot.forEach(doc => {
-      doc.ref.delete();
-    });
-
-    this.io.to(user.room_id).emit("REFRESH_USERS");
+    this.io.to(deleteUserDto.room_id).emit("REFRESH_USERS");
   }
 }
