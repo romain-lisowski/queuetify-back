@@ -43,13 +43,25 @@ export class RoomsService {
   }
 
   async create(): Promise<Room> {
-    const room = await this.firebaseService.db.collection('rooms').add({
-      name: null,
+    const docRef = await this.firebaseService.db.collection('rooms').add({
       created_at: this.firebaseService.firebase.firestore.FieldValue.serverTimestamp(),
+      name: null,
       current: null,
     });
 
-    return room;
+    if (docRef) {
+      const doc = await this.firebaseService.db
+        .collection('rooms')
+        .doc(docRef.id)
+        .get();
+
+      return {
+        id: doc.id,
+        ...doc.data()
+      };
+    }
+
+    return null;
   }
 
   async delete(id: string): Promise<any> {
