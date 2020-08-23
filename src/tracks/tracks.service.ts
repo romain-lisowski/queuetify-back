@@ -48,6 +48,7 @@ export class TracksService {
 
     querySnapshot.forEach(doc => {
       const track = doc.data();
+      console.log(track.played_at);
       if (track && track.played_at) {
         current = {
           id: track.id,
@@ -55,6 +56,9 @@ export class TracksService {
         };
       }
     });
+
+    console.log(roomId + " - " + current);
+
 
     return current;
   }
